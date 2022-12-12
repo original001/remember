@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import styles from "./Card.module.css";
 import { createCard, getTranslation } from "../api";
 import { LexicalEntry, TranslationResult } from "../types";
+import classnames from "classnames";
 
 export function CardPage() {
   const [word, setWord] = useState("");
   const [translate, setTranslate] = useState("");
   const [results, setResults] = useState<TranslationResult[]>([]);
+  const [chosenSense, setSense] = useState<[number, number, string]>([0, 0, ""]);
 
   const handleCreateCard = () =>
     createCard({
@@ -40,6 +42,20 @@ export function CardPage() {
       }
     });
   }, [word]);
+
+  const [resultIndex, entryIndex, senseId] = chosenSense;
+  const getTranslationText = () => {
+    if (results.length === 0) {
+      return "";
+    }
+    const senses = results[resultIndex].lexicalEntries[entryIndex].entries[0].senses;
+    const chosenSense = senses.find((s) => s.id === senseId);
+    if (chosenSense && chosenSense.translations) {
+      return chosenSense.translations.map((tr) => tr.text).join(", ");
+    }
+    return "";
+  };
+
   return (
     <div className={styles.root}>
       <div className={styles.left}>
@@ -51,7 +67,7 @@ export function CardPage() {
             onChange={(e) => setWord(e.target.value)}
           />
         </div>
-        <div className={styles.card}>{translate}</div>
+        <div className={styles.card}>{getTranslationText()}</div>
         <div style={{ height: 30 }}></div>
         <Button size="large" use="primary" onClick={handleCreateCard}>
           Create
@@ -59,15 +75,18 @@ export function CardPage() {
       </div>
       <div className={styles.right}>
         <div>Oxford Dictionary</div>
-        <div style={{height: 30}}></div>
+        <div style={{ height: 30 }}></div>
         {results.length &&
-          results.map((result) => (
+          results.map((result, resultIndex) => (
             <div className={styles.resultGroup}>
-              {result.lexicalEntries.map((entry) => (
+              {result.lexicalEntries.map((entry, entryIndex) => (
                 <div>
                   <div className={styles.lexicalCategory}>{entry.lexicalCategory.text}</div>
                   {entry.entries[0].senses.map((sense) => (
-                    <div className={styles.dictItem}>
+                    <div
+                      className={classnames(styles.dictItem, chosenSense[2] === sense.id && styles.active)}
+                      onClick={() => setSense([resultIndex, entryIndex, sense.id])}
+                    >
                       <div className={styles.dictItemTranslate}>
                         {sense.translations?.map((tr) => tr.text).join(", ")}
                       </div>
