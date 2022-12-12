@@ -1,0 +1,72 @@
+:local .root {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+:local .textarea {
+  width: 80%;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 30px;
+  text-align: center;
+}
+
+:local .left {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+:local .right {
+  text-align: left;
+}
+
+:local .card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  width: 300px;
+  border: 2px solid #ddd;
+  border-radius: 0 0 14px 14px;
+}
+
+:local .card:first-child {
+  border-radius: 14px 14px 0 0;
+  border-bottom: 0;
+}
+
+:local .dictItem {
+  display: flex;
+  row-gap: 4px;
+  flex-direction: column;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: #eee;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+:local .lexicalCategory {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+:local .resultGroup {
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 12px;
+}
+
+:local .resultGroup:last-child {
+  border-bottom: none;
+}
+
+:local .dictItemTranslate {
+  font-weight: bold;
+}
+
+:local .dictItemExample {
+  font-style: italic;
+}
