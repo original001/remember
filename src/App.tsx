@@ -1,7 +1,11 @@
 import { HashRouter, Link, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Card } from "./Card";
-const apiUrl = "https://wrv6ojgvlg6d2b247hrvzdrv4y0zcybj.lambda-url.eu-north-1.on.aws/Production";
+
+if (process.env.NODE_ENV === 'development') {
+  const { worker } = require('./browser')
+  worker.start()
+}
 
 function App() {
   return (

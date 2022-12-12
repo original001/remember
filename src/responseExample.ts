@@ -1,4 +1,4 @@
-const a = {
+export const responseMock = {
   id: "sustain",
   metadata: {
     operation: "translations",
@@ -396,4 +396,4 @@ const a = {
   word: "sustain",
 };
 
-export type ResponseType = typeof a
+export type ResponseType = typeof responseMock
