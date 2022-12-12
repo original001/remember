@@ -1,25 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { HashRouter, Link, Route, Routes } from "react-router-dom";
+import "./App.css";
+import { Card } from "./Card";
+const apiUrl = "https://wrv6ojgvlg6d2b247hrvzdrv4y0zcybj.lambda-url.eu-north-1.on.aws/Production";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <HashRouter>
+      <div className="App">
+        <header className="App-header">
+          <Routes>
+            <Route path="/" element={<Card />} />
+            <Route path="/training" element={<span>Training <Link to={"/"}>Back</Link></span>} />
+            <Route path="/list" element={<span>List</span>} />
+            <Route path="/edit" element={<Card />} />
+          </Routes>
+          <Link to={"training"}>Go to training</Link>
+        </header>
+      </div>
+    </HashRouter>
   );
 }
 
