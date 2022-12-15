@@ -2,59 +2,41 @@ import { Button } from "@skbkontur/react-ui";
 import { useEffect, useState } from "react";
 import styles from "./Card.module.css";
 import { createCard, getTranslation } from "../api";
-import { LexicalEntry, TranslationResult } from "../types";
+import { Sense, TranslationResult } from "../types";
 import classnames from "classnames";
+import useDebounce from "../useDebounce";
+import useSWR from "swr";
 
 export function CardPage() {
   const [word, setWord] = useState("");
-  const [translate, setTranslate] = useState("");
-  const [results, setResults] = useState<TranslationResult[]>([]);
-  const [chosenSense, setSense] = useState<[number, number, string]>([0, 0, ""]);
+  const debouncedSearch = useDebounce(word, 300);
+
+  const [chosenSense, setSense] = useState<Sense | undefined>();
+
+  const { data: results, isLoading } = useSWR(`?word=${debouncedSearch}`, getTranslation, { revalidateOnFocus: false });
+
+  const audioUrl = results?.[0].lexicalEntries[0].entries[0].pronunciations?.find(
+    (p) => p.dialects[0] === "American English"
+  )?.audioFile;
 
   const handleCreateCard = () =>
     createCard({
       original: word,
-      translate,
-      // example: results[0].lexicalEntries[0].entries[0].senses[0].examples[0].text,
-      pronounceUrl: results[0].lexicalEntries[0].entries[0].pronunciations[0].audioFile,
+      translate: chosenSense?.translations?.[0].text || "",
+      example: chosenSense?.examples?.[0].text,
+      pronounceUrl: audioUrl,
     });
 
   useEffect(() => {
-    if (!word) return;
+    if (results == null) return;
 
-    getTranslation(word).then((data) => {
-      setResults(data);
-      const firstEntry = data[0].lexicalEntries[0].entries[0];
-      const audioUrl = firstEntry.pronunciations.find((p) => p.dialects[0] === "American English")?.audioFile;
-
-      if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        audio.play();
-      }
-
-      let tr;
-      try {
-        tr = firstEntry.senses[0].translations;
-      } catch (e) {}
-
-      if (tr) {
-        setTranslate(tr[0].text);
-      }
-    });
-  }, [word]);
-
-  const [resultIndex, entryIndex, senseId] = chosenSense;
-  const getTranslationText = () => {
-    if (results.length === 0) {
-      return "";
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play();
     }
-    const senses = results[resultIndex].lexicalEntries[entryIndex].entries[0].senses;
-    const chosenSense = senses.find((s) => s.id === senseId);
-    if (chosenSense && chosenSense.translations) {
-      return chosenSense.translations.map((tr) => tr.text).join(", ");
-    }
-    return "";
-  };
+
+    setSense(results[0].lexicalEntries[0].entries[0].senses[0]);
+  }, [results]);
 
   return (
     <div className={styles.root}>
@@ -67,7 +49,17 @@ export function CardPage() {
             onChange={(e) => setWord(e.target.value)}
           />
         </div>
-        <div className={styles.card}>{getTranslationText()}</div>
+        <div className={styles.card}>
+          {isLoading && (
+            <span>Loading...</span>
+          )}
+          {!isLoading && results?.length !== 0 && word !== "" && chosenSense && (
+            <>
+              <div className={styles.main}>{chosenSense.translations?.[0].text}</div>
+              <div className={styles.note}>{chosenSense.examples?.[0].text}</div>
+            </>
+          )}
+        </div>
         <div style={{ height: 30 }}></div>
         <Button size="large" use="primary" onClick={handleCreateCard}>
           Create
@@ -76,16 +68,18 @@ export function CardPage() {
       <div className={styles.right}>
         <div>Oxford Dictionary</div>
         <div style={{ height: 30 }}></div>
-        {results.length &&
+        {results?.length &&
+          word !== "" &&
           results.map((result, resultIndex) => (
-            <div className={styles.resultGroup}>
+            <div key={resultIndex} className={styles.resultGroup}>
               {result.lexicalEntries.map((entry, entryIndex) => (
-                <div>
+                <div key={entryIndex}>
                   <div className={styles.lexicalCategory}>{entry.lexicalCategory.text}</div>
                   {entry.entries[0].senses.map((sense) => (
                     <div
-                      className={classnames(styles.dictItem, chosenSense[2] === sense.id && styles.active)}
-                      onClick={() => setSense([resultIndex, entryIndex, sense.id])}
+                      key={sense.id}
+                      className={classnames(styles.dictItem, chosenSense?.id === sense.id && styles.active)}
+                      onClick={() => setSense(sense)}
                     >
                       <div className={styles.dictItemTranslate}>
                         {sense.translations?.map((tr) => tr.text).join(", ")}

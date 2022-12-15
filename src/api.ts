@@ -11,8 +11,8 @@ interface Card {
   note?: string;
 }
 
-export const getTranslation = (word: string) =>
-  fetch(`${apiUrl}?word=${word}`, {
+export const getTranslation = (url: string) =>
+  fetch(`${apiUrl}${url}`, {
     method: "GET",
     headers: {
       Accept: "application/json",

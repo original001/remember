@@ -41,7 +41,7 @@ interface Pronunciation {
   phoneticSpelling: string;
 }
 
-interface Sense {
+export interface Sense {
   examples?: Example[];
   datasetCrossLinks?: DatasetCrossLink[];
   translations?: Translation[];

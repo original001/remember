@@ -26,10 +26,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   height: 250px;
   width: 300px;
   border: 2px solid #ddd;
   border-radius: 0 0 14px 14px;
+}
+
+:local .card .main {
+  margin-bottom: 12px;
+}
+
+:local .card .note {
+  font-size: 18px;
+  font-weight: normal;
+  font-style: italic;
+  color: #808080;
 }
 
 :local .card:first-child {
