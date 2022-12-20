@@ -25,6 +25,7 @@ export function CardPage() {
       translate: chosenSense?.translations?.[0].text || "",
       example: chosenSense?.examples?.[0].text,
       pronounceUrl: audioUrl,
+      repeatAfterDate: new Date().toISOString(),
     });
 
   useEffect(() => {
@@ -50,9 +51,7 @@ export function CardPage() {
           />
         </div>
         <div className={styles.card}>
-          {isLoading && (
-            <span>Loading...</span>
-          )}
+          {isLoading && <span>Loading...</span>}
           {!isLoading && results?.length !== 0 && word !== "" && chosenSense && (
             <>
               <div className={styles.main}>{chosenSense.translations?.[0].text}</div>

@@ -1,4 +1,5 @@
 import { rest } from "msw";
+import { listMock } from "./listMock";
 import { responseMeanMock, responseMock } from "./responseExample";
 
 export const handlers = [
@@ -10,5 +11,11 @@ export const handlers = [
   }),
   rest.post("/create", (req, res, ctx) => {
     return res(ctx.status(200));
+  }),
+  rest.post("/update", (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
+  rest.post("/getlist", (req, res, ctx) => {
+    return res(ctx.json(listMock));
   }),
 ];

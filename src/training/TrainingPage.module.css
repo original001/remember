@@ -1,0 +1,19 @@
+:local .root {
+  text-align: center;
+}
+
+:local .card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 250px;
+  width: 300px;
+  border: 2px solid #ddd;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+:local .card:hover {
+  background-color: #f1f1f1;
+}
